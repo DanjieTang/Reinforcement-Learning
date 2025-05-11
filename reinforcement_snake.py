@@ -6,8 +6,6 @@ import numpy as np
 from collections import deque
 from snake_game import SnakeGame
 from torch.optim.lr_scheduler import CosineAnnealingLR
-import sys
-from time import sleep
 
 # Determine the device to use
 if torch.backends.mps.is_available(): # Apple Silicon 
@@ -120,16 +118,13 @@ def train(agent: Agent, optimizer: optim.Optimizer, scheduler: optim.lr_schedule
             memory.append((current_state, action, reward, next_state))
 
             train_short_memory(agent, optimizer, memory[-1], criterion)
-
-            if i % 100 == 0:
-                game.print_board()
-                sleep(0.05)
         
         scores.append(score)
         train_long_memory(agent, optimizer, memory, criterion, batch_size)
         scheduler.step()
 
         if i % 100 == 0:
+            print(f"Game {i}")
             print(f"Average score: {sum(scores) / len(scores)}")
             scores = []
 
