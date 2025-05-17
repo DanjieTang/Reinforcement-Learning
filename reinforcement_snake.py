@@ -152,11 +152,6 @@ def train_long_memory(agent: Agent, optimizer: optim.Optimizer, memory: deque[tu
 
     target_q_values_for_actions_taken = rewards + 0.9 * next_q_values * (~(rewards == -1))
 
-    # for i in range(len(target)):
-    #     if rewards[i] == -1:
-    #         print(target_q_values_for_actions_taken[i-1])
-    #         print(target_q_values_for_actions_taken[i])
-    #         break
     target[torch.arange(len(target)), actions] = target_q_values_for_actions_taken
 
     loss = criterion(pred, target)
@@ -187,6 +182,8 @@ if __name__ == "__main__":
     game.init_game()
 
     agent: Agent = Agent(board_size=board_size).to(device)
+    total_params = sum(p.numel() for p in agent.parameters())
+    print(f"Total number of parameters in the model: {total_params}")
     optimizer: optim.Optimizer = optim.Adam(agent.parameters(), lr=beginning_lr)
     scheduler: optim.lr_scheduler.CosineAnnealingLR = CosineAnnealingLR(optimizer, T_max=num_games, eta_min=ending_lr)
     memory: deque[tuple[torch.Tensor, int, float, torch.Tensor]] = deque(maxlen=memory_size)
